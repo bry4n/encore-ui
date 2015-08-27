@@ -118,12 +118,8 @@ angular.module('encore.ui.rxFeedback', ['ngResource'])
                 // We only want the data after this point
                 return response.data;
             }, function () {
-                // Connection failed to CDN? return just the default URL as it's base
-                // This overrides the promise failure and trickles down as a succesful execution
-                return $q.when({
-                    base: defaultUserVoiceURL,
-                    categoryPrefix: defaultCategoryPrefix
-                });
+                // Connection failed to CDN? return an empty object
+                return {};
             });
         }
         return httpPromise;
@@ -146,7 +142,6 @@ angular.module('encore.ui.rxFeedback', ['ngResource'])
         scope.loadingUserVoice = true;
         openPromise = $interval(function () {
             $window.open(route, '_blank');
-            return route;
         }, 3000, 1, false);
         openPromise.finally(function () {
             scope.loadingUserVoice = false;
@@ -194,7 +189,7 @@ angular.module('encore.ui.rxFeedback', ['ngResource'])
             scope.feedbackTypes = feedbackTypes;
 
             scope.cancelOpen = function () {
-                UserVoiceMapping.cancelOpen(scope);
+                UserVoiceMapping.cancelOpen();
             };
 
             scope.setCurrentUrl = function (modalScope) {

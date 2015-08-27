@@ -72,7 +72,7 @@ describe('rxFeedback', function () {
     });
 
     it('should set the current url of the page on the modal\'s scope', function () {
-        var modalScope = { '$watch': sinon.stub() };
+        var modalScope = { $watch: sinon.stub() };
         locationMock.url.returns('/path');
         elScope.setCurrentUrl(modalScope);
         expect(modalScope.currentUrl).to.equal('/path');
@@ -153,10 +153,6 @@ describe('rxFeedback', function () {
         httpMock.flush();
 
         expect(notifySvcMock.add.args[0][0]).to.contain(customFailure);
-    });
-
-    it('should attempt to redirect a user when feature requests are chosen', function () {
-
     });
 
     describe('overwriting sendFeedback functionality', function () {
