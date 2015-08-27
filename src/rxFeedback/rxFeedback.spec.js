@@ -59,6 +59,8 @@ describe('rxFeedback', function () {
             feedbackSvc = rxFeedbackSvc;
             apiUrl = feedbackApi;
             httpMock = $httpBackend;
+
+            httpMock.expectGET('/encore/feedback/route-map.json').respond(404);
         });
 
         // overwrite the fallback so it doesn't refresh the page
@@ -70,7 +72,7 @@ describe('rxFeedback', function () {
     });
 
     it('should set the current url of the page on the modal\'s scope', function () {
-        var modalScope = {};
+        var modalScope = { '$watch': sinon.stub() };
         locationMock.url.returns('/path');
         elScope.setCurrentUrl(modalScope);
         expect(modalScope.currentUrl).to.equal('/path');
@@ -151,6 +153,10 @@ describe('rxFeedback', function () {
         httpMock.flush();
 
         expect(notifySvcMock.add.args[0][0]).to.contain(customFailure);
+    });
+
+    it('should attempt to redirect a user when feature requests are chosen', function () {
+
     });
 
     describe('overwriting sendFeedback functionality', function () {
@@ -337,4 +343,217 @@ describe('rxFeedbackSvc', function () {
 
         expect(mockWindow.location.href).to.contain(ninetiesEmail);
     });
+});
+
+describe('UserVoiceMapping', function () {
+    var userVoiceSvc, scope, routeGet, interval, httpBackend, windowSvc;
+
+    var defaultBaseURL = 'https://get.feedback.rackspace.com/forums/297396-encore';
+
+    var defaultResponse = {
+        'base': 'http://mock-base.com',
+        'categoryPrefix': '/category',
+        '/billing': '132123-billing',
+        '/test': '132126-cloud'
+    };
+
+    beforeEach(function () {
+        module('encore.ui.rxFeedback');
+
+        module(function ($provide) {
+            $provide.value('$window', {
+                open: sinon.stub()
+            });
+        });
+
+        inject(function ($rootScope, UserVoiceMapping, $httpBackend, $window, $interval) {
+            userVoiceSvc = UserVoiceMapping;
+            scope = $rootScope.$new();
+            httpBackend = $httpBackend;
+            windowSvc = $window;
+            interval = $interval;
+
+            // Set type to the first feedback type
+            scope.feedback = {
+                type: { label: 'Some Name' }
+            };
+
+            scope.$watch('feedback.type', userVoiceSvc.watch);
+        });
+    });
+
+    describe('Scope Interactions', function () {
+        beforeEach(function () {
+            routeGet = httpBackend.expectGET('/encore/feedback/route-map.json');
+            routeGet.respond(200, defaultResponse);
+            httpBackend.flush();
+        });
+
+        afterEach(function () {
+            httpBackend.verifyNoOutstandingExpectation();
+            httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('should set showRedirectMessage to false on every call', function () {
+            expect(scope.showRedirectMessage, 'showRedirectMessage false after flush digest').to.be.false;
+
+            scope.feedback.type = { label: 'Some Other Label' };
+            scope.$digest();
+
+            expect(scope.showRedirectMessage, 'showRedirectMessage false after digest').to.be.false;
+
+            scope.feedback.type = { label: 'Some Really Bogus Label' };
+            scope.showRedirectMessage = true;
+            scope.$digest();
+
+            expect(scope.showRedirectMessage, 'showRedirectMessage reverted back to false').to.be.false;
+        });
+
+        it('should set showRedirectMessage to true if type.label is Feature Request', function () {
+            expect(scope.showRedirectMessage, 'showRedirectMessage false after flush digest').to.be.false;
+
+            scope.feedback.type = { label: 'Feature Request' };
+            scope.$digest();
+
+            expect(scope.showRedirectMessage, 'showRedirectMessage true after digest').to.be.true;
+        });
+
+        it('should not make more http calls after multiple calls to fetchRoutes', function () {
+            scope.feedback.type = { label: 'Oh Label my Label' };
+            scope.$digest();
+
+            httpBackend.verifyNoOutstandingExpectation();
+            httpBackend.verifyNoOutstandingRequest();
+
+            scope.feedback.type = { label: 'Feature Request' };
+            scope.$digest();
+
+            httpBackend.verifyNoOutstandingExpectation();
+            httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('should save the final route to scope when the right type is chosen', function () {
+            expect(scope.route).to.be.undefined;
+
+            scope.feedback.type = { label: 'Oh Route my Label' };
+            scope.$digest();
+
+            expect(scope.route).to.be.undefined;
+
+            scope.feedback.type = { label: 'Feature Request' };
+            scope.$digest();
+
+            expect(scope.route).to.eql('http://mock-base.com');
+        });
+
+        it('should maintain a flag that tells scope we are loading a new window', function () {
+            expect(scope.loadingUserVoice).to.be.undefined;
+
+            scope.feedback.type = { label: 'Feature Request' };
+            scope.$digest();
+
+            expect(scope.loadingUserVoice).to.be.true;
+
+            interval.flush(3000);
+            scope.$digest();
+
+            expect(scope.loadingUserVoice).to.be.false;
+        });
+
+    });
+
+    describe('Default Overrides', function () {
+        beforeEach(function () {
+            routeGet = httpBackend.expectGET('/encore/feedback/route-map.json');
+        });
+
+        afterEach(function () {
+            httpBackend.verifyNoOutstandingExpectation();
+            httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('should have default base URL if route responds with error', function () {
+            routeGet.respond(400, {});
+            httpBackend.flush();
+
+            scope.feedback.type = { label: 'Feature Request' };
+            scope.$digest();
+
+            expect(scope.route).to.eql(defaultBaseURL);
+        });
+
+        it('should have default category prefix if route responds without custom categoryPrefix', function () {
+            routeGet.respond(200, {
+                '/': 'some-new-route'
+            });
+            httpBackend.flush();
+
+            scope.feedback.type = { label: 'Feature Request' };
+            scope.$digest();
+
+            expect(scope.route).to.eql(defaultBaseURL + '/category/some-new-route');
+        });
+
+        it('should override default category prefix', function () {
+            routeGet.respond(200, {
+                'categoryPrefix': 'prefix-me-url',
+                '/': 'some-new-route'
+            });
+            httpBackend.flush();
+
+            scope.feedback.type = { label: 'Feature Request' };
+            scope.$digest();
+
+            expect(scope.route).to.eql(defaultBaseURL + '/prefix-me-url/some-new-route');
+        });
+
+        it('should override base url', function () {
+            routeGet.respond(200, {
+                'base': 'http://something',
+                '/': 'some-new-route'
+            });
+            httpBackend.flush();
+
+            scope.feedback.type = { label: 'Feature Request' };
+            scope.$digest();
+
+            expect(scope.route).to.eql('http://something/category/some-new-route');
+        });
+    });
+
+    describe('Actions', function () {
+        beforeEach(function () {
+            routeGet = httpBackend.expectGET('/encore/feedback/route-map.json');
+            routeGet.respond(200, defaultResponse);
+            httpBackend.flush();
+
+            scope.feedback.type = { label: 'Feature Request' };
+            scope.$digest();
+        });
+
+        afterEach(function () {
+            httpBackend.verifyNoOutstandingExpectation();
+            httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('should maintain open a new window', function () {
+            expect(windowSvc.open).to.have.been.notCalled;
+
+            interval.flush(3000);
+            scope.$digest();
+
+            expect(windowSvc.open).to.have.been.calledOnce;
+        });
+
+        it('should cancel the interval to open a window', function () {
+            expect(windowSvc.open).to.have.been.notCalled;
+
+            userVoiceSvc.cancelOpen();
+            interval.flush(3000);
+            scope.$digest();
+
+            expect(windowSvc.open).to.have.been.notCalled;
+        });
+    });
+
 });

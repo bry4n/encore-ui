@@ -16,6 +16,14 @@ module.exports = {
             rewrite: {
                 '/api/identity': '/v2.0/'
             }
+        },
+        {
+            context: '/encore/feedback',
+            host: 'staging.encore.rackspace.com',
+            port: 443,
+            https: true,
+            protocol: 'https',
+            changeOrigin: false,
         }
     ],
     dist: {

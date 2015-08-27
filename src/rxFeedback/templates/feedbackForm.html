@@ -15,7 +15,7 @@
     </rx-field>
   </rx-form-section>
 
-  <rx-form-section ng-show="fields.type">
+  <rx-form-section ng-show="fields.type" ng-if="!showRedirectMessage">
     <rx-field>
       <rx-field-name class="feedback-description">{{fields.type.prompt}}:</rx-field-name>
       <rx-field-content>
@@ -29,4 +29,12 @@
       </rx-field-content>
     </rx-field>
   </rx-form-section>
+  <div ng-if="showRedirectMessage">
+    <div class="well centered">
+        <h2 class="title subdued">We want to hear your voice!</h2>
+        *You will now be redirected to a new window.*<br />
+        <a href="{{ route }}" target="_blank">{{ route }}</a>
+        <button class="title button cancel xs" ng-if="loadingUserVoice" ng-click="cancelOpen()">Cancel Redirect</button>
+    </div>
+  </div>
 </rx-modal-form>
