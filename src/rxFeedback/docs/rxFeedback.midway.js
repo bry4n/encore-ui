@@ -41,9 +41,7 @@ describe('rxFeedback', function () {
                                          'so we can figure it out for you.'].join('')
             },
             'Feature Request': {
-                descriptionLabel: 'Feature Description:',
-                descriptionPlaceholder: ['Please be as descriptive as possible ',
-                                         'so we can make your feature awesome.'].join('')
+                redirectDescriptionText: 'We want to hear your voice! *You will now be redirected to a new window.*'
             },
             'Kudos': {
                 descriptionLabel: 'What made you happy?:',
@@ -69,7 +67,6 @@ describe('rxFeedback', function () {
                     expect(successfulFeedback[property]).to.eventually.equal(text);
                 });
             });
-
         });
 
     });

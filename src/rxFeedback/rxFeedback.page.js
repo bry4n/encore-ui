@@ -69,6 +69,12 @@ var rxFeedback = {
         }
     },
 
+    redirectDescriptionText: {
+        get: function () {
+            return this.rootElement.$('.redirect-description').getText();
+        }
+    },
+
     send: {
         /**
           Prepares, writes, and submits feedback.
