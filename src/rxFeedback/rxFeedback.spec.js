@@ -60,7 +60,7 @@ describe('rxFeedback', function () {
             apiUrl = feedbackApi;
             httpMock = $httpBackend;
 
-            httpMock.expectGET('/encore/feedback/route-map.json').respond(404);
+            httpMock.whenGET('/encore/feedback/route-map.json').respond(404);
         });
 
         // overwrite the fallback so it doesn't refresh the page
