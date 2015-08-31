@@ -140,6 +140,9 @@ angular.module('encore.ui.rxFeedback', ['ngResource'])
     // Open a new window with the defined route
     var openWindow = function (scope, route) {
         scope.loadingUserVoice = true;
+        if (openPromise) {
+            $interval.cancel(openPromise);
+        }
         openPromise = $interval(function () {
             $window.open(route, '_blank');
         }, 3000, 1, false);
@@ -152,6 +155,7 @@ angular.module('encore.ui.rxFeedback', ['ngResource'])
     return {
         cancelOpen: function cancelOpen () {
             $interval.cancel(openPromise);
+            openPromise = undefined;
         },
         watch: function watchValue (type, old, scope) {
             // By Default we do not want to show the redirect message
