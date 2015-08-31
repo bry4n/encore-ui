@@ -149,9 +149,6 @@ angular.module('encore.ui.rxFeedback', ['ngResource'])
         return route;
     };
 
-    // Let's prefetch route maps
-    fetchRoutes();
-
     return {
         cancelOpen: function cancelOpen () {
             $interval.cancel(openPromise);
@@ -159,6 +156,9 @@ angular.module('encore.ui.rxFeedback', ['ngResource'])
         watch: function watchValue (type, old, scope) {
             // By Default we do not want to show the redirect message
             scope.showRedirectMessage = false;
+
+            // Let's prefetch route maps only when the watch has been set up
+            fetchRoutes();
 
             // Check if we are doing "Feature Requests"
             if (type && _.contains(userVoiceTypes, type.label)) {
