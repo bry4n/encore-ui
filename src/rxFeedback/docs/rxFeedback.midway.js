@@ -75,17 +75,20 @@ describe('rxFeedback', function () {
         it('should open a new window after 3 seconds for Feature Request', function () {
             successfulFeedback.open();
             successfulFeedback.type = 'Feature Request';
-            browser.sleep(3000);
+            // Gives it enough time for window to pop open and get redirected to fedsso login
+            browser.sleep(3100);
             browser.getAllWindowHandles().then(function (handles) {
                 expect(handles.length).to.eql(2);
+
                 browser.switchTo().window(handles[1]).then(function () {
+
                     // This will automatically go to the NAM Rackspace Login page
                     expect(browser.driver.getCurrentUrl()).to.eventually.contain('uservoice');
                     browser.driver.close();
-                });
 
-                // Get back to original window
-                browser.switchTo().window(handles[0]);
+                    // Get back to original window
+                    browser.switchTo().window(handles[0]);
+                });
             });
 
         })
