@@ -41,7 +41,10 @@ describe('rxFeedback', function () {
                                          'so we can figure it out for you.'].join('')
             },
             'Feature Request': {
-                redirectDescriptionText: 'We want to hear your voice! *You will now be redirected to a new window.*'
+                redirectDescriptionText: ['We want to hear your voice!',
+                                          '*You will now be redirected to a new window.*',
+                                          'https://get.feedback.rackspace.com/forums/297396-encore ' +
+                                          'Cancel Redirect'].join('\n')
             },
             'Kudos': {
                 descriptionLabel: 'What made you happy?:',
