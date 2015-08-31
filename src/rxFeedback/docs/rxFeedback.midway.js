@@ -34,6 +34,7 @@ describe('rxFeedback', function () {
     });
 
     describe('feedback types and labels', function () {
+        var defaultUserVoiceURL = 'https://get.feedback.rackspace.com/forums/297396-encore';
         var typesAndLabels = {
             'Incorrect Data': {
                 descriptionLabel: 'Problem Description:',
@@ -43,8 +44,7 @@ describe('rxFeedback', function () {
             'Feature Request': {
                 redirectDescriptionText: ['We want to hear your voice!',
                                           '*You will now be redirected to a new window.*',
-                                          'https://get.feedback.rackspace.com/forums/297396-encore ' +
-                                          'Cancel Redirect'].join('\n')
+                                          defaultUserVoiceURL + ' Cancel Redirect'].join('\n')
             },
             'Kudos': {
                 descriptionLabel: 'What made you happy?:',
@@ -70,6 +70,28 @@ describe('rxFeedback', function () {
                     expect(successfulFeedback[property]).to.eventually.equal(text);
                 });
             });
+        });
+
+        it('should open a new window after 3 seconds for Feature Request', function () {
+            successfulFeedback.open();
+            successfulFeedback.type = 'Feature Request';
+            browser.sleep(3000);
+            browser.getAllWindowHandles().then(function (handles) {
+                expect(handles.length).to.eql(2);
+                browser.switchTo().window(handles[1]).then(function () {
+                    // This will automatically go to the NAM Rackspace Login page
+                    expect(browser.driver.getCurrentUrl()).to.eventually.contain('uservoice');
+                    browser.driver.close();
+                });
+
+                // Get back to original window
+                browser.switchTo().window(handles[0]);
+            });
+
+        })
+
+        after(function () {
+            successfulFeedback.type = 'Kudos'
         });
 
     });
