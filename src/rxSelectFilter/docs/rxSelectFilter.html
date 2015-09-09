@@ -4,7 +4,13 @@
     <table class="table-striped">
         <thead>
             <th colspan="6" class="filter-header">
-                <rx-select-filter filter="filter"></rx-select-filter>
+                <form rx-form>
+                    <rx-form-section>
+                        <rx-field>
+                            <rx-select-filter filter="filter"></rx-select-filter>
+                        </rx-field>
+                    </rx-form-section>
+                </form>
             </th>
             <tr>
                 <th>Account</th>

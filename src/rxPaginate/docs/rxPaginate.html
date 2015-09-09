@@ -29,21 +29,29 @@
         <button ng-click="removeServers()" class="button sm negative">Remove first 2 servers</button>
         <button ng-click="addServers()" class="button sm positive">Add 2 servers</button>
     </p>
-    
+
     <h2 class="title">API-Based Pagination</h2>
     <p>The API used by this demo is returning 100 items more than the user's selected <code>itemsPerPage</code>. If the user's <code>itemsPerPage</code> is 25, then the API will return 125 items on each request. This means with the default <code>itemsPerPage</code> of 25, five pages of results are coming back at a time. You should be able to click through pages 1-5 without a loading message, and then the loading message will appear for page 6.</p>
 
     <p>Click the "Refresh" button to see how the current page can be reloaded without the user interacting with the <code>&lt;rx-paginate&gt;</code> buttons.</p>
 
     <p>Enter a search string of "error" to see the default error handling.</p>
-   
+
     <button ng-click="pagedServers.refresh()" class="button sm">Refresh</button>
     <table rx-floating-header rx-loading-overlay class="table-striped demo-api-pagination">
         <thead>
             <tr>
                 <th colspan="2" class="filter-header">
-                    <rx-search-box rx-placeholder="'Filter by any...'" ng-model="data.searchText"></rx-search-box>
-                    <rx-select-filter filter="osFilter"></rx-select-filter>
+                    <form rx-form>
+                        <rx-form-section>
+                            <rx-field>
+                                <rx-search-box rx-placeholder="'Filter by any...'" ng-model="data.searchText"></rx-search-box>
+                            </rx-field>
+                            <rx-field>
+                                <rx-select-filter filter="osFilter"></rx-select-filter>
+                            </rx-field>
+                        </rx-form-section>
+                    </form>
                 </th>
             </tr>
             <tr>

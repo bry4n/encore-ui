@@ -1,14 +1,28 @@
+<style>
+  .demoForm {
+      width: 400px;
+  }
+</style>
+
 <div ng-controller="collapseFilterExampleCtrl">
     <rx-collapse title="Filter results">
-        <rx-form-item label="Region">
-            <span class="field-select">
-                <select ng-model="filter.region">
-                    <option value="">Any</option>
-                    <option value="{{region.name}}" ng-repeat="region in regions">{{region.city}}</option>
-                </select>
-            </span>
-        </rx-form-item>
+        <form rx-form class="demoForm">
+            <rx-form-section>
+                <rx-field>
+                    <rx-field-name>Region </rx-field-name>
+                    <rx-field-content>
+                        <rx-input>
+                            <select rx-select ng-model="filter.region">
+                                <option value="">Any</option>
+                                <option value="{{region.name}}" ng-repeat="region in regions">{{region.city}}</option>
+                            </select>
+                        </rx-input>
+                    </rx-field-content>
+                </rx-field>
+            </rx-form-section>
+        </form>
     </rx-collapse>
+
     <table class="table-striped">
         <thead>
         <tr>
