@@ -1,0 +1,22 @@
+<div ng-controller="rxDatePickerCtrl">
+
+    <p>
+        Date: {{ dateModel }}
+    </p>
+
+    <form rx-form>
+        <rx-form-section controlled-width>
+            <rx-field>
+                <rx-field-content>
+                    <rx-input>
+                        <rx-date-picker
+                            ng-model="dateModel"
+                            min-date="minDate"
+                            max-date="maxDate"></rx-date-picker>
+                    </rx-input>
+                </rx-field-content>
+            </rx-field>
+        </rx-form-section>
+    </form>
+
+</div>

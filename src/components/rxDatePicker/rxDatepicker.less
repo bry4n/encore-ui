@@ -1,0 +1,71 @@
+
+.rx-date-picker {
+    background-color: @white;
+    color: @gray-900;
+    font: @appFont;
+    font-size: @appFontSize;
+    line-height: @appLineHeight;
+
+    .date-picker {
+        border-top: 5px solid @blue-700;
+    }
+
+    .fake-date-picker {
+        border: 1px solid @gray-600;
+        cursor: pointer;
+        padding: 2px 5px;
+
+        .fa-calendar {
+            color: @blue-700;
+        }
+    }
+
+    table {
+        border: 1px solid @gray-400;
+    }
+
+    table thead th,
+    table tbody td {
+        color: @gray-400;
+        background-color: @white;
+        border: none;
+
+        a,
+        a:hover {
+            color: @gray-800;
+            cursor: pointer;
+        }
+
+        .selected {
+            background-color: @blue-700;
+            color: @white;
+        }
+    }
+
+    .controls {
+        th {
+            font-size: 13px;
+            color: @gray-900;
+        }
+
+        .next-month,
+        .previous-month {
+            cursor: pointer;
+        }
+
+        .current-month {
+            text-align: center;
+        }
+    }
+
+    .days {
+        tr {
+            border: 1px solid @gray-900;
+        }
+        th {
+            font-size: 10px;
+            background-color: @gray-50;
+            color: @gray-600;
+        }
+    }
+}

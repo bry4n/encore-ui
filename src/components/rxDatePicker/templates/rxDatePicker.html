@@ -1,0 +1,37 @@
+<div class="rx-date-picker">
+    <div class="fake-date-picker">
+        <input type="text" value="{{dateDisplay}}" readonly>
+        <i class="fa fa-calendar"></i>
+    </div>
+
+    <table class="date-picker" ng-if="preview">
+        <thead>
+            <tr class="controls">
+                <th ng-click="prevMonth()" class="previous-month"> &lsaquo; </th>
+                <th colspan="5" class="current-month">{{ currentMonth }}</th>
+                <th ng-click="nextMonth()" class="next-month"> &rsaquo; </th>
+            </tr>
+            <tr class="days">
+                <th> S </th>
+                <th> M </th>
+                <th> T </th>
+                <th> W </th>
+                <th> T </th>
+                <th> F </th>
+                <th> S </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="week in weeks">
+                <td ng-repeat="day in week" ng-class="{selected: day.selected}">
+                    <span ng-if="thisMonth(day.format)" class="current-month">
+                        <a ng-click="selectDate(day.format)">{{ day.date }}</a>
+                    </span>
+                    <span ng-if="!thisMonth(day.format)">
+                        {{ day.date }}
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
